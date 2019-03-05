@@ -37,3 +37,22 @@ Then, run the class file:
 i.e.
 
 ```javac --module-path ~/Downloads/javafx-sdk-11.0.2/lib --add-modules=javafx.controls,javafx.fxml Pong```
+
+## Games
+
+### Pong
+#### Description
+Pong consists of two vertical paddles (rectangles) placed on opposing ends of the screen, and a ball which moves between said paddles. 
+Each player controls one paddle, and uses it to reflect the incoming ball. 
+If a player fails to reflect the incoming ball, and it strikes their side of the screen, the opponent gains a point.
+
+The goal is to manipulate the ball in such a way that the opponent is unable to reflect it, thus gaining you a point.
+
+#### Controls
+Player 1:
+* W - Move paddle up
+* S - Move paddle down
+
+Player 2:
+* UP - Move paddle up
+* DOWN - Move paddle down
