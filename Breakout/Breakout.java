@@ -234,7 +234,7 @@ public class Breakout extends Application {
                                     double maxy = object.getBoundsInParent().getMaxY();
                                     if (ball.inRangeX(minx, maxx))
                                         ball.yvelocity *= -1;
-                                    if (ball.inRangeY(miny, maxy))
+                                    else if (ball.inRangeY(miny, maxy))
                                         ball.xvelocity *= -1;
                                     root.getChildren().remove(object);
                                     player.score += 10;
