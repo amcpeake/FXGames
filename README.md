@@ -56,3 +56,41 @@ Player 1:
 Player 2:
 * UP - Move paddle up
 * DOWN - Move paddle down
+
+### Atari Breakout
+#### Description
+Atari Breakout is a simple game in which the player's goal is to destroy all the bricks by hitting them with the ball. 
+The player controls a paddle at the bottom of the screen which is used to reflect the ball back up towards the bricks.
+The game is won when no bricks remain. 
+If a player fails to reflect the ball, they lose a life. 
+The game is over when the player has no lives remaining. 
+
+#### Controls
+* D || RIGHT - Move paddle right
+* A || LEFT - Move paddle left
+
+### Snake
+#### Description
+In Snake, you control a "snake" (small blue line) whose goal it is to grow as large as possible. 
+To achieve this goal, you eat "apples" (small green squares) to grow longer.
+Each apple eaten increases your score.
+
+#### Controls
+* W || UP - Move snake up
+* A || LEFT - Move snake left
+* S || DOWN - Move snake down
+* D || RIGHT - Move snake right
+
+### Chess
+#### Description
+In chess, your goal is to put your opponent in a state of checkmate, wherein they have no legal moves which would prevent your from capturing their King.
+
+Pieces are moved by first hovering over a peice (yellow square), selecting the piece (orange square), then selecting a location to move it to (yellow square).
+
+#### Controls
+* W || UP - Move selection up
+* A || LEFT - Move selection left
+* S || DOWN - Move selection down
+* D || RIGHT - Move selector right
+* SPACE - Select piece || Place piece
+* ESCAPE - Deselect piece
