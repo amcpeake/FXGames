@@ -94,3 +94,18 @@ Pieces are moved by first hovering over a peice (yellow square), selecting the p
 * D || RIGHT - Move selector right
 * SPACE - Select piece || Place piece
 * ESCAPE - Deselect piece
+
+### Papi Jump
+#### Description
+Papi Jump is an age-old spin on a classic gaming format. 
+The original Papi Jump is regarded by many as the cleanest, best executed "jump" game, and was voted best app in 2005.
+
+In the words of the original creators, Sunflat games, "PapiJump is a simple but addictive jumping action game!
+Mr.Papi (red ball guy) wants to go up higher, is jumping eternally."
+
+The goal of Papi Jump is to climb as high as possible through bouncing on various colored platforms. 
+Each color represents a different type of platform; Green platforms do nothing special while yellow platforms dissapear after one bounce, and red platforms will bounce you extra high.
+
+#### Controls
+* A || LEFT - Move Papi left
+* D || RIGHT - Move Papi right
