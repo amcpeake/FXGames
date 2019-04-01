@@ -1,3 +1,5 @@
+package Tetris;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -15,11 +17,29 @@ import java.util.Random;
 public class Tetris extends Application {
     private Text scoreboard;
     private List<List<Block>> board;
+    private List<List<Block>> queueBoard;
+    private List<Tetronimo> queue;
     private Tetronimo piece;
     private int score = 0;
     private enum Direction {DOWN, LEFT, RIGHT}
+    private enum pType {
+        I, O, T, J, L, S, Z;
+        private static pType last = null;
+        private static pType type = null;
+        private static final pType[] VALUES = values();
+        private static final int SIZE = values().length;
+        private static final Random RANDOM = new Random();
 
-    void clear(int rowIndex) { // Clears a row and moves all settled pieces above it down
+        private static pType getRand() {
+            while (type == last) { // Prevents consecutive pieces of same type
+                type = VALUES[RANDOM.nextInt(SIZE)];
+            }
+            last = type;
+            return type;
+        }
+    }
+
+    private void clear(int rowIndex) { // Clears a row and moves all settled pieces above it down
         score += 1000;
 
         for (int x = 0; x <= 9; x++) {
@@ -27,14 +47,6 @@ public class Tetris extends Application {
             board.get(x).get(rowIndex).settled = false;
         }
 
-        /*while (rowIndex >= 0) {
-            for (int x = 0; x <= 9; x++) {
-                if (board.get(x).get(rowIndex).settled) {
-                    board.get(x).get(rowIndex).fall();
-                }
-            }
-            rowIndex--;
-        }*/
         for (int x = 0; x <= 9; x++) {
             for (int y = rowIndex - 1; y >= 0; y--) {
                 if (board.get(x).get(y).settled) {
@@ -48,7 +60,7 @@ public class Tetris extends Application {
         }
     }
 
-    void checkRows() { // Scans the board bottom up to see if any rows are full
+    private void checkRows() { // Scans the board bottom up to see if any rows are full
         int i = board.get(0).size() - 1;
         while (i >= 0) {
             boolean full = true;
@@ -66,15 +78,6 @@ public class Tetris extends Application {
                 clear(i);
                 break;
             }
-        }
-    }
-
-    private enum pType {
-        I, O, T, J, L, S, Z;
-
-        private static pType getRand() {
-            Random random = new Random();
-            return values()[random.nextInt(values().length)];
         }
     }
 
@@ -106,7 +109,8 @@ public class Tetris extends Application {
         }
 
         int getFall() { // Return the minimum Y coordinate the piece can "fall" to
-            int dy = 1;
+            int dy;
+            
             for (dy = 1; dy <= 22; dy++) {
                 if (this.location.y + dy > 23)
                     break;
@@ -115,6 +119,7 @@ public class Tetris extends Application {
                     break;
                 }
             }
+            
             return this.location.y + dy - 1;
         }
     }
@@ -130,10 +135,10 @@ public class Tetris extends Application {
 
             switch(type) {
                 case I:
-                    bLocs.add(new Location(2, 4)); // 0
-                    bLocs.add(new Location(3, 4)); // 1
-                    bLocs.add(new Location(4, 4)); // 2
-                    bLocs.add(new Location(5, 4)); // 3
+                    bLocs.add(new Location(4, 7)); // 0
+                    bLocs.add(new Location(4, 6)); // 1
+                    bLocs.add(new Location(4, 5)); // 2
+                    bLocs.add(new Location(4, 4)); // 3
                     this.color = Color.CYAN;
                     break;
 
@@ -187,13 +192,36 @@ public class Tetris extends Application {
 
             }
             this.axis = this.bLocs.get(2);
-            // Check list of blocks, if any are filled, game over
 
-            if (this.check(bLocs)) {
+            for (Location l : bLocs) {
+                queueBoard.get(l.x - 3).get((l.y - 4) + (queue.size() * 5)).setFill(this.color);
+            }
+            // Check list of blocks, if any are filled, game over
+        }
+
+        void spawn() { // Move from queue to board; Delete index 0 from queue, add to board, shift other queue pieces up, add new piece at the bottom
+
+            if (this.check(bLocs)) { // Move piece[0] to board
                 for(Location l : bLocs) {
                     board.get(l.x).get(l.y).setFill(this.color);
                 }
             }
+
+            queue.remove(0); // Remove queue[0], shift all other tetronimoes up queue
+
+            for (List<Block> row : queueBoard) { // Clear the board
+                for (Block b : row) {
+                    b.setFill(Color.TRANSPARENT);
+                }
+            }
+
+            for (Tetronimo t : queue) { // Repaint the board
+                for (Location l : t.bLocs) {
+                    queueBoard.get(l.x - 3).get((l.y - 4) + (queue.indexOf(t) * 5)).setFill(t.color);
+                }
+            }
+
+            queue.add(new Tetronimo());
         }
 
         void control(Direction d){ // Move the entire piece in a given direction
@@ -260,7 +288,6 @@ public class Tetris extends Application {
         }
 
         void highlight() { // Highlights where the piece will end up
-            int yCoord = 23;
             for (int dy = 1; dy < 24; dy++) {
                 for (Location l : this.bLocs) { // Keep shifting piece down until one part hits a settled piece or the bottom
                     if ((l.y + dy <= 23 && board.get(l.x).get(l.y + dy).settled) || l.y + dy == 24) {
@@ -280,30 +307,46 @@ public class Tetris extends Application {
 
 
     @Override
-    public void start(Stage stage) throws Exception{
+    public void start(Stage stage) {
         Rectangle cover = new Rectangle(0, 0, 500, 250);
-        cover.setFill(Color.BLUE);
+        cover.setFill(Color.DARKCYAN);
         cover.setViewOrder(1);
 
         scoreboard = new Text();
-        scoreboard.setFont(new Font("tlwg typewriter", 20));
+        scoreboard.setFont(new Font("tlwg typewriter", 30));
         scoreboard.setViewOrder(0);
-        scoreboard.setX(150);
-        scoreboard.setY(100);
+        scoreboard.setText("Score: 0");
+        scoreboard.setX(250 - (scoreboard.getBoundsInParent().getWidth() / 2));
+        scoreboard.setY(125);
         scoreboard.setFill(Color.WHITE);
 
         Group root = new Group(cover, scoreboard);
 
-        board = new ArrayList<List<Block>>();
-        for (int x = 0; x < 10; x++) {
-            board.add(new ArrayList<Block>());
-            for (int y = 0; y < 24; y++) {
+        board = new ArrayList<>();
+        for (int x = 0; x <= 9; x++) {
+            board.add(new ArrayList<>());
+            for (int y = 0; y <= 23; y++) {
                 board.get(x).add(new Block(new Location(x, y)));
             }
             root.getChildren().addAll(board.get(x));
         }
 
-        piece = new Tetronimo();
+        queueBoard = new ArrayList<>();
+        for (int x = 0; x <= 2; x++) {
+            queueBoard.add(new ArrayList<>());
+            for (int y = 0; y <= 13; y++) {
+                queueBoard.get(x).add(new Block(new Location(x + 11, y + 5)));
+            }
+            root.getChildren().addAll(queueBoard.get(x));
+        }
+
+        queue = new ArrayList<>();
+        queue.add(new Tetronimo());
+        queue.add(new Tetronimo());
+        queue.add(new Tetronimo());
+
+        piece = queue.get(0);
+        piece.spawn();
 
         stage.setTitle("Tetris");
 
@@ -329,33 +372,31 @@ public class Tetris extends Application {
         stage.show();
 
 
-        Thread check = new Thread() {
-            public void run() {
-                while (true) {
-                    checkRows();
-                }
+        Thread check = new Thread(() -> {
+            while (true) {
+                checkRows();
             }
-        };
+        });
         check.setDaemon(true);
         check.start();
 
 
         Thread control = new Thread() {
-            int t = 1000;
+            int delay = 1000; // Time between falling in ms
             public void run() {
                 while (true) {
+                    scoreboard.setText("Score: " + score);
                     piece.control(Direction.DOWN);
+
                     for (int x = 0; x <= 9; x++) {
                         if (board.get(x).get(4).settled) {
-                            scoreboard.setFont(new Font("tlwg typewriter", 30));
                             scoreboard.setText("GAME OVER\nFinal Score: " + score);
                             return; // Game over
                         }
                     }
-                    scoreboard.setText("Score: " + score);
 
                     try {
-                        Thread.sleep(t); // Will speed up as game progresses
+                        Thread.sleep(delay); // Will speed up as game progresses
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -367,10 +408,16 @@ public class Tetris extends Application {
                                 board.get(m.x).get(m.y).settled = true;
                             }
 
-                            piece = new Tetronimo();
+                            piece = queue.get(0);
+                            piece.spawn();
+
                             break;
                         }
                     }
+
+                    if (delay > 500)
+                        delay--;
+
                 }
             }
         };
