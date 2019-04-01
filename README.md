@@ -109,3 +109,19 @@ Each color represents a different type of platform; Green platforms do nothing s
 #### Controls
 * A || LEFT - Move Papi left
 * D || RIGHT - Move Papi right
+
+### Tetris
+#### Description
+In Tetris, the goal is to obtain as high a score as possible without losing.
+A game is lost when so many pieces (technically called "Tetrominos") have accumulated on the board that one spills out over the top of the board.
+
+To prevent this accumulation, the player must clear rows by arranging tetrominos in such a way that they form a full horizontal line across the board. When this happens, said row is cleared from the board and points are added to the player's score.
+
+On the right side of the board is your "queue".
+The queue represents the upcoming tetrominos that you will have to control, in descending order.
+
+#### Controls
+* W || UP - Rotate tetromino
+* A || LEFT - Move tetromino left
+* S || DOWN - Move tetromino down
+* D || RIGHT - Move tetromino right
